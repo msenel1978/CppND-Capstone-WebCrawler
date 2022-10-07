@@ -8,6 +8,7 @@
 #include <string>
 
 #include "url.h"
+#include <gumbo.h>
 
 using namespace std;
 
