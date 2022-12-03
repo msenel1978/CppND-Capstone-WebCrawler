@@ -16,7 +16,8 @@ set(CMAKE_CXX_FLAGS, "${CXX_FLAGS} -pthread")
 file(GLOB project_SRCS src/main.cpp
 						src/webcrawler.cpp
 						src/html_parser.cpp
-						src/webcrawler.h)
+						src/webcrawler.h
+						src/html_parser.h)
 
 add_executable(WebCrawler ${project_SRCS})
 target_link_libraries(WebCrawler CURL::libcurl LibXml2::LibXml2)
