@@ -48,8 +48,10 @@ size_t HTML_Parser::follow_links(CURL *curl_handle, memory_t *mem, char *url) {
     if (!link || strlen(link) < 20) continue;
     if (!strncmp(link, "http://", 7) || !strncmp(link, "https://", 8)) {
       // curl_multi_add_handle(multi_handle, make_handle(link));
+
       // TODO: Print the link, write to vector, write to file?
       cout << link << endl;
+
       if (count++ == max_link_per_page) break;
     }
     xmlFree(link);

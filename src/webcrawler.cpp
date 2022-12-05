@@ -96,10 +96,6 @@ CURLcode webCrawler::make_request(CURLU *destination_handle) {
           parser.follow_links(this->curl, this->mem, url);
         }
 
-        // TODO: Not needed
-        // findURLs_in_buf(mem->buf);
-
-        // TODO: write into file
       } else {
         cout << "HTTP " << (int)res_status << " " << url << endl;
       }
