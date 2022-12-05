@@ -1,5 +1,6 @@
 #include "html_parser.h"
 
+#include <cstring>
 #include <libxml/HTMLparser.h>
 #include <libxml/uri.h>
 #include <libxml/xpath.h>
