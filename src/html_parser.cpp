@@ -1,20 +1,25 @@
 #include "html_parser.h"
 
-#include <cstring>
 #include <libxml/HTMLparser.h>
 #include <libxml/uri.h>
 #include <libxml/xpath.h>
 
+#include <cstring>
+#include <iostream>
+
 #include "webcrawler.h"
 
-int max_link_per_page = 5;
-int follow_relative_links = 0;
+using namespace std;
+
+int is_html(char *ctype) {
+  return ctype != NULL && strlen(ctype) > 10 && strstr(ctype, "text/html");
+}
 
 /* HREF finder implemented in libxml2 but could be any HTML parser */
-size_t HTML_Parser::follow_links(CURLM *multi_handle, memory_t *mem,
-                                 char *url) {
+size_t HTML_Parser::follow_links(CURL *curl_handle, memory_t *mem, char *url) {
   int opts = HTML_PARSE_NOBLANKS | HTML_PARSE_NOERROR | HTML_PARSE_NOWARNING |
              HTML_PARSE_NONET;
+
   htmlDocPtr doc = htmlReadMemory(mem->buf, mem->size, url, NULL, opts);
   if (!doc) return 0;
   xmlChar *xpath = (xmlChar *)"//a/@href";
@@ -44,14 +49,11 @@ size_t HTML_Parser::follow_links(CURLM *multi_handle, memory_t *mem,
     if (!strncmp(link, "http://", 7) || !strncmp(link, "https://", 8)) {
       // curl_multi_add_handle(multi_handle, make_handle(link));
       // TODO: Print the link, write to vector, write to file?
+      cout << link << endl;
       if (count++ == max_link_per_page) break;
     }
     xmlFree(link);
   }
   xmlXPathFreeObject(result);
   return count;
-}
-
-int HTML_Parser::is_html(char *ctype) {
-  return ctype != NULL && strlen(ctype) > 10 && strstr(ctype, "text/html");
 }

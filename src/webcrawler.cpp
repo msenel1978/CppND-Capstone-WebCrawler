@@ -8,6 +8,8 @@
 #include <set>
 #include <string>
 
+#include "html_parser.h"
+
 using namespace std;
 
 size_t webCrawler::write_data(void *contents, size_t sz, size_t nmemb,
@@ -32,6 +34,9 @@ webCrawler::webCrawler() {
 
   // curl handle
   curl = curl_easy_init();
+
+  // Verbose mode
+  curl_easy_setopt(curl, CURLOPT_VERBOSE, 0L);
 
   if (curl) {
     // Buffer for received data
@@ -68,6 +73,7 @@ CURLcode webCrawler::make_request(CURLU *destination_handle) {
   char *url;
   CURLUcode rc = curl_url_get(destination_handle, CURLUPART_URL, &url, 0);
   CURLcode res;
+  long res_status;
 
   if (!rc) {
     curl_easy_setopt(curl, CURLOPT_URL, url);
@@ -75,30 +81,38 @@ CURLcode webCrawler::make_request(CURLU *destination_handle) {
     res = curl_easy_perform(curl);
 
     if (res == CURLE_OK) {
-      cout << "We received " << mem->size << "B of data" << endl;
+      curl_easy_getinfo(this->curl, CURLINFO_RESPONSE_CODE, &res_status);
 
-      curl_easy_cleanup(curl);
+      //  Successful request
+      if (res_status == 200) {
+        char *ctype;
+        curl_easy_getinfo(this->curl, CURLINFO_CONTENT_TYPE, &ctype);
+        cout << "HTTP 200 (" << ctype << "): " << url << endl;
+        cout << "We received " << mem->size << "B of data" << endl;
 
-      // TODO: Find URLs in this buf
-      findURLs_in_buf(mem->buf);
+        if (is_html(ctype) && this->mem->size > 100) {
+          HTML_Parser parser;
 
-      // TODO: write into file
+          parser.follow_links(this->curl, this->mem, url);
+        }
+
+        // TODO: Not needed
+        // findURLs_in_buf(mem->buf);
+
+        // TODO: write into file
+      } else {
+        cout << "HTTP " << (int)res_status << " " << url << endl;
+      }
 
     } else
-      cout << "Request Failed - CURLCode: " << curl_easy_strerror(res) << endl;
+      cout << "Connection failure - CURLCode: " << curl_easy_strerror(res)
+           << " to: " << url << endl;
 
     curl_free(url);
+    curl_easy_cleanup(curl);
   }
 
   return res;
-}
-
-// TODO: Find URLs in this buf
-int webCrawler::findURLs_in_buf(char *received_buf) {
-  int num_url = 0;
-  string web_site = string(received_buf);
-
-  return num_url;
 }
 
 webCrawler::~webCrawler() {
