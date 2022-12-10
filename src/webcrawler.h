@@ -5,6 +5,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 typedef struct {
   char *buf;
@@ -17,6 +18,8 @@ class webCrawler {
 
   // TODO: Can I have this as a shared_ptr?
   memory_t *mem;
+  std::vector<CURLU*> _url_vec;
+  int _urls_visited;
 
  public:
   webCrawler();
@@ -24,6 +27,12 @@ class webCrawler {
 
   // TODO: High level function that makes the request and fetch the web-site
   CURLcode make_request(CURLU *destination);
+
+  // Add discovered URL
+  void add_url(CURLU *new_url) {
+    _url_vec.push_back(new_url);
+    _urls_visited++;
+  }
 
   /* Utility function to parse urls */
   int findURLs_in_buf(char *received_buf);

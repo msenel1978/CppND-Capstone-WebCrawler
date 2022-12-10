@@ -30,6 +30,10 @@ size_t webCrawler::write_data(void *contents, size_t sz, size_t nmemb,
 }
 
 webCrawler::webCrawler() {
+
+  // Initilaize counter
+  _urls_visited = 0;
+
   curl_global_init(CURL_GLOBAL_DEFAULT);
 
   // curl handle
@@ -93,7 +97,8 @@ CURLcode webCrawler::make_request(CURLU *destination_handle) {
         if (is_html(ctype) && this->mem->size > 100) {
           HTML_Parser parser;
 
-          parser.follow_links(this->curl, this->mem, url);
+          parser.follow_links(this->curl, this->mem, url, _url_vec);
+          //parser.follow_links(this->curl, this->mem, url);
         }
 
       } else {

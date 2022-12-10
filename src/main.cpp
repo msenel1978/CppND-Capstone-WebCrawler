@@ -17,6 +17,10 @@ int main() {
   rc = curl_url_set(first_url_handle, CURLUPART_URL, "https://www.reuters.com",
                     0);
 
+  // Add first url to the visited url list
+  crawl.add_url(first_url_handle);
+
+  // Start crawling
   if (!rc) crawl.make_request(first_url_handle);
 
   // TODO: Clean the debug prints
