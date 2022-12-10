@@ -12,23 +12,6 @@
 
 using namespace std;
 
-size_t webCrawler::write_data(void *contents, size_t sz, size_t nmemb,
-                              void *ctx) {
-  size_t realsize = sz * nmemb;
-  memory_t *tmp_mem = (memory_t *)ctx;
-  char *ptr = (char *)realloc(tmp_mem->buf, tmp_mem->size + realsize);
-  if (!ptr) {
-    /* out of memory */
-    printf("not enough memory (realloc returned NULL)\n");
-    return 0;
-  }
-
-  tmp_mem->buf = ptr;
-  memcpy(&(tmp_mem->buf[tmp_mem->size]), contents, realsize);
-  tmp_mem->size += realsize;
-  return realsize;
-}
-
 webCrawler::webCrawler() {
 
   // Initilaize counter
@@ -114,6 +97,23 @@ CURLcode webCrawler::make_request(CURLU *destination_handle) {
   }
 
   return res;
+}
+
+size_t webCrawler::write_data(void *contents, size_t sz, size_t nmemb,
+                              void *ctx) {
+  size_t realsize = sz * nmemb;
+  memory_t *tmp_mem = (memory_t *)ctx;
+  char *ptr = (char *)realloc(tmp_mem->buf, tmp_mem->size + realsize);
+  if (!ptr) {
+    /* out of memory */
+    printf("not enough memory (realloc returned NULL)\n");
+    return 0;
+  }
+
+  tmp_mem->buf = ptr;
+  memcpy(&(tmp_mem->buf[tmp_mem->size]), contents, realsize);
+  tmp_mem->size += realsize;
+  return realsize;
 }
 
 webCrawler::~webCrawler() {
