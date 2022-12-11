@@ -57,9 +57,7 @@ size_t HTML_Parser::follow_links(CURL *curl_handle, memory_t *mem, char *url, we
 
       // Add new url to the visited url list
       crawler->add_url(new_url_handle);
-
-      // TODO: Print the link, write to vector, write to file?
-      cout << link << endl;
+      // TODO: Write the link to a file
 
       if (count++ == max_link_per_page) break;
     }
