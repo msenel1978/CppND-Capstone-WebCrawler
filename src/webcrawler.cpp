@@ -14,9 +14,6 @@ using namespace std;
 
 webCrawler::webCrawler() {
 
-  // Initilaize counter
-  _urls_visited = 0;
-
   curl_global_init(CURL_GLOBAL_DEFAULT);
 
   // curl handle
@@ -77,8 +74,9 @@ CURLcode webCrawler::make_request(CURLU *destination_handle) {
         cout << "HTTP 200 (" << ctype << "): " << url << endl;
         cout << "We received " << mem->size << "B of data" << endl;
 
-        // Add the URL to the already visited URLs
-        add_url(destination_handle);
+        // If no URL was visited yet, add the URL to the already visited URLs
+        // TODO: If this is not the first hop, pop a URL from to-be-visited, push to visited
+        _urls_visited.push_back(destination_handle);
 
         if (is_html(ctype) && this->mem->size > 100) {
           HTML_Parser parser;
@@ -122,7 +120,10 @@ webCrawler::~webCrawler() {
   if (curl) {
 
     // Clean the url handles
-    for (CURLU *url_handle : _url_vec)
+    for (CURLU *url_handle : _urls_visited)
+      curl_url_cleanup(url_handle);
+
+    for (CURLU *url_handle : _urls_to_be_visited)
       curl_url_cleanup(url_handle);
 
     // Buffer clean-up

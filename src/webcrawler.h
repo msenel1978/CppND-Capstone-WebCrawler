@@ -19,8 +19,8 @@ class webCrawler {
 
   // TODO: Can I have this as a shared_ptr?
   memory_t *mem;
-  std::vector<CURLU*> _url_vec;
-  int _urls_visited;
+  std::vector<CURLU*> _urls_visited;
+  std::vector<CURLU*> _urls_to_be_visited;
 
  public:
   webCrawler();
@@ -30,9 +30,8 @@ class webCrawler {
   CURLcode make_request(CURLU *destination);
 
   // Add discovered URL
-  void add_url(CURLU *new_url) {
-    _url_vec.push_back(new_url);
-    _urls_visited++;
+  void add_url_to_be_visited(CURLU *new_url) {
+    _urls_to_be_visited.push_back(new_url);
   }
 
   /* Utility function to parse urls */
@@ -52,9 +51,24 @@ class webCrawler {
     char *url;
     CURLUcode rc;
 
-    std::cout << "_urls_visited: " << _urls_visited << " vector size: " << _url_vec.size() << std::endl;
+    std::cout << "URLs to be visited: " << _urls_to_be_visited.size() << std::endl;
 
-    for (CURLU *new_url_handle : _url_vec) {
+    for (CURLU *new_url_handle : _urls_to_be_visited) {
+      curl_url_get(new_url_handle, CURLUPART_URL, &url, 0);
+      std::cout << url << std::endl;
+    }
+
+    curl_free(url);
+}
+
+// Utility function to print url's already visited
+void print_visited() {
+    char *url;
+    CURLUcode rc;
+
+    std::cout << "URLs already visited: " << _urls_visited.size() << std::endl;
+
+    for (CURLU *new_url_handle : _urls_visited) {
       curl_url_get(new_url_handle, CURLUPART_URL, &url, 0);
       std::cout << url << std::endl;
     }

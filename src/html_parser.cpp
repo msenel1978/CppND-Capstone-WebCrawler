@@ -56,7 +56,7 @@ size_t HTML_Parser::follow_links(CURL *curl_handle, memory_t *mem, char *url, we
       rc = curl_url_set(new_url_handle, CURLUPART_URL, link, 0);
 
       // Add new url to the visited url list
-      crawler->add_url(new_url_handle);
+      crawler->add_url_to_be_visited(new_url_handle);
       // TODO: Write the link to a file
 
       if (count++ == max_link_per_page) break;

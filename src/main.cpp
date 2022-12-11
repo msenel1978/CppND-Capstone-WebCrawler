@@ -24,8 +24,11 @@ int main() {
   cout << "Crawl object has " << crawl.buf_size() << "B buffered data"
        << "\n";
 
-  cout << "Following need to be visited:" << endl;
+  // Print URLs to be visited
   crawl.print_to_be_visited();
+
+  // Print URLs already visited
+  crawl.print_visited();
 
   return 0;
 }
