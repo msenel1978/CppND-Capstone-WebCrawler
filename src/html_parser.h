@@ -12,7 +12,7 @@ class HTML_Parser {
 
  public:
   // size_t follow_links(CURLM *multi_handle, memory *mem, char *url);
-  size_t follow_links(CURL *curl_handle, memory_t *mem, char *url, std::vector<CURLU*> url_vec);
+  size_t follow_links(CURL *curl_handle, memory_t *mem, char *url, webCrawler *crawler);
   //size_t follow_links(CURL *curl_handle, memory_t *mem, char *url);
 };
 

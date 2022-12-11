@@ -17,15 +17,15 @@ int main() {
   rc = curl_url_set(first_url_handle, CURLUPART_URL, "https://www.reuters.com",
                     0);
 
-  // Add first url to the visited url list
-  crawl.add_url(first_url_handle);
-
   // Start crawling
   if (!rc) crawl.make_request(first_url_handle);
 
   // TODO: Clean the debug prints
   cout << "Crawl object has " << crawl.buf_size() << "B buffered data"
        << "\n";
+
+  cout << "Following need to be visited:" << endl;
+  crawl.print_to_be_visited();
 
   return 0;
 }

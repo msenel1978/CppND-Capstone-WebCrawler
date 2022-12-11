@@ -77,11 +77,13 @@ CURLcode webCrawler::make_request(CURLU *destination_handle) {
         cout << "HTTP 200 (" << ctype << "): " << url << endl;
         cout << "We received " << mem->size << "B of data" << endl;
 
+        // Add the URL to the already visited URLs
+        add_url(destination_handle);
+
         if (is_html(ctype) && this->mem->size > 100) {
           HTML_Parser parser;
 
-          parser.follow_links(this->curl, this->mem, url, _url_vec);
-          //parser.follow_links(this->curl, this->mem, url);
+          parser.follow_links(this->curl, this->mem, url, this);
         }
 
       } else {
@@ -118,10 +120,15 @@ size_t webCrawler::write_data(void *contents, size_t sz, size_t nmemb,
 
 webCrawler::~webCrawler() {
   if (curl) {
+
+    // Clean the url handles
+    for (CURLU *url_handle : _url_vec)
+      curl_url_cleanup(url_handle);
+
     // Buffer clean-up
     free(mem->buf);
     free(mem);
 
     curl_global_cleanup();
-  }
+}
 }
