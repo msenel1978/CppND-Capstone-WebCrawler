@@ -6,6 +6,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <iostream>
 
 typedef struct {
   char *buf;
@@ -45,6 +46,21 @@ class webCrawler {
     auto *object = (webCrawler *)ctx;
     object->write_data(ctx, sz, nmemb, context);
   }
+
+  // Utility function to print url's to be visited
+  void print_to_be_visited() {
+    char *url;
+    CURLUcode rc;
+
+    std::cout << "_urls_visited: " << _urls_visited << " vector size: " << _url_vec.size() << std::endl;
+
+    for (CURLU *new_url_handle : _url_vec) {
+      curl_url_get(new_url_handle, CURLUPART_URL, &url, 0);
+      std::cout << url << std::endl;
+    }
+
+    curl_free(url);
+}
 
   // Utility function to check how many bytes are in the buffer
   int buf_size() { return mem->size; }
