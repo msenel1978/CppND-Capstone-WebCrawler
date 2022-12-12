@@ -58,7 +58,8 @@ class webCrawler {
       std::cout << url << std::endl;
     }
 
-    curl_free(url);
+    if (_urls_to_be_visited.size())
+      curl_free(url);
 }
 
 // Utility function to print url's already visited
@@ -73,7 +74,8 @@ void print_visited() {
       std::cout << url << std::endl;
     }
 
-    curl_free(url);
+    if (_urls_visited.size())
+      curl_free(url);
 }
 
   // Utility function to check how many bytes are in the buffer
