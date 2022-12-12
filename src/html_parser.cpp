@@ -17,8 +17,10 @@ int is_html(char *ctype) {
 }
 
 /* HREF finder implemented in libxml2 but could be any HTML parser */
-size_t HTML_Parser::follow_links(CURL *curl_handle, memory_t *mem, char *url, webCrawler *crawler) {
-//size_t HTML_Parser::follow_links(CURL *curl_handle, memory_t *mem, char *url) {
+size_t HTML_Parser::follow_links(CURL *curl_handle, memory_t *mem, char *url,
+                                 webCrawler *crawler) {
+  // size_t HTML_Parser::follow_links(CURL *curl_handle, memory_t *mem, char
+  // *url) {
   int opts = HTML_PARSE_NOBLANKS | HTML_PARSE_NOERROR | HTML_PARSE_NOWARNING |
              HTML_PARSE_NONET;
 

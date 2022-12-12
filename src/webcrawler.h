@@ -3,10 +3,10 @@
 
 #include <curl/curl.h>
 
+#include <iostream>
 #include <memory>
 #include <string>
 #include <vector>
-#include <iostream>
 
 typedef struct {
   char *buf;
@@ -19,8 +19,8 @@ class webCrawler {
 
   // TODO: Can I have this as a shared_ptr?
   memory_t *mem;
-  std::vector<CURLU*> _urls_visited;
-  std::vector<CURLU*> _urls_to_be_visited;
+  std::vector<CURLU *> _urls_visited;
+  std::vector<CURLU *> _urls_to_be_visited;
 
  public:
   webCrawler();
@@ -51,19 +51,19 @@ class webCrawler {
     char *url;
     CURLUcode rc;
 
-    std::cout << "URLs to be visited: " << _urls_to_be_visited.size() << std::endl;
+    std::cout << "URLs to be visited: " << _urls_to_be_visited.size()
+              << std::endl;
 
     for (CURLU *new_url_handle : _urls_to_be_visited) {
       curl_url_get(new_url_handle, CURLUPART_URL, &url, 0);
       std::cout << url << std::endl;
     }
 
-    if (_urls_to_be_visited.size())
-      curl_free(url);
-}
+    if (_urls_to_be_visited.size()) curl_free(url);
+  }
 
-// Utility function to print url's already visited
-void print_visited() {
+  // Utility function to print url's already visited
+  void print_visited() {
     char *url;
     CURLUcode rc;
 
@@ -74,9 +74,8 @@ void print_visited() {
       std::cout << url << std::endl;
     }
 
-    if (_urls_visited.size())
-      curl_free(url);
-}
+    if (_urls_visited.size()) curl_free(url);
+  }
 
   // Utility function to check how many bytes are in the buffer
   int buf_size() { return mem->size; }

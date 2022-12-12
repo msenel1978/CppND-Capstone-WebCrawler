@@ -13,7 +13,6 @@
 using namespace std;
 
 webCrawler::webCrawler() {
-
   curl_global_init(CURL_GLOBAL_DEFAULT);
 
   // curl handle
@@ -75,7 +74,8 @@ CURLcode webCrawler::make_request(CURLU *destination_handle) {
         cout << "We received " << mem->size << "B of data" << endl;
 
         // If no URL was visited yet, add the URL to the already visited URLs
-        // TODO: If this is not the first hop, pop a URL from to-be-visited, push to visited
+        // TODO: If this is not the first hop, pop a URL from to-be-visited,
+        // push to visited
         _urls_visited.push_back(destination_handle);
 
         if (is_html(ctype) && this->mem->size > 100) {
@@ -118,18 +118,15 @@ size_t webCrawler::write_data(void *contents, size_t sz, size_t nmemb,
 
 webCrawler::~webCrawler() {
   if (curl) {
-
     // Clean the url handles
-    for (CURLU *url_handle : _urls_visited)
-      curl_url_cleanup(url_handle);
+    for (CURLU *url_handle : _urls_visited) curl_url_cleanup(url_handle);
 
-    for (CURLU *url_handle : _urls_to_be_visited)
-      curl_url_cleanup(url_handle);
+    for (CURLU *url_handle : _urls_to_be_visited) curl_url_cleanup(url_handle);
 
     // Buffer clean-up
     free(mem->buf);
     free(mem);
 
     curl_global_cleanup();
-}
+  }
 }
