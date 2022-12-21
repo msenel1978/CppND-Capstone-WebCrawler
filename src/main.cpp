@@ -1,6 +1,7 @@
 #include <curl/curl.h>
 #include <stdio.h>
 
+#include <fstream>
 #include <iostream>
 #include <memory>
 #include <string>
@@ -9,10 +10,13 @@
 
 using namespace std;
 
+ofstream visited_savefile;
+
 int main() {
   int request_count = 0;
   webCrawler crawl;
   CURLU *url_handle = curl_url();
+  char *url;
   CURLUcode rc;
 
   // First url handle
@@ -34,6 +38,16 @@ int main() {
     if (crawl.make_request(url_handle) == CURLE_OK) {
       request_count = 0;
 
+      // Write visited web-site to the file
+      visited_savefile.open("visited_urls.txt", ios::app);
+      if (!visited_savefile)
+        cout << "Could not write to file - No such file found";
+      else {
+        curl_url_get(url_handle, CURLUPART_URL, &url, 0);
+        visited_savefile << url << endl;
+        visited_savefile.close();
+      }
+
       // TODO: Clean the debug prints
       cout << "Crawl object has " << crawl.buf_size() << "B buffered data"
            << "\n";
@@ -41,11 +55,12 @@ int main() {
         cout << "Nor URLs to be visited: List is empty" << endl;
         break;
       }
-      char *url;
       curl_url_get(url_handle, CURLUPART_URL, &url, 0);
       cout << "Following url is next: " << url << endl;
-    } else
+    } else {
+      request_count++;
       cout << " Will try: " << MAX_REQUESTS - request_count << " times" << endl;
+    }
 
     // Print URLs already visited
     // cout << "Following sites have been visited so far:" << endl;
@@ -53,6 +68,8 @@ int main() {
   }
 
   // Print URLs to be visited
+  cout << "Following urls are in the queue to be visited:" << endl;
+  cout << "---------------------";
   crawl.print_to_be_visited();
 
   return 0;
