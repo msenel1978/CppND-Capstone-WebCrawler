@@ -22,11 +22,8 @@ webCrawler::webCrawler() {
   curl_easy_setopt(curl, CURLOPT_VERBOSE, 0L);
 
   if (curl) {
-    // Buffer for received data
+    // Buffer struct for received data
     mem = (memory_t *)malloc(sizeof(memory_t));
-    mem->size = 0;
-    mem->buf = (char *)malloc(1);
-    const char *data = "robots.txt";
 
     /* Important: use HTTP2 over HTTPS */
     curl_easy_setopt(curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_2TLS);
@@ -59,6 +56,10 @@ CURLcode webCrawler::make_request(CURLU *destination_handle) {
   long res_status;
 
   if (!rc) {
+    // Buffer for received data
+    mem->size = 0;
+    mem->buf = (char *)malloc(1);
+
     curl_easy_setopt(curl, CURLOPT_URL, url);
 
     res = curl_easy_perform(curl);
@@ -70,13 +71,10 @@ CURLcode webCrawler::make_request(CURLU *destination_handle) {
       if (res_status == 200) {
         char *ctype;
         curl_easy_getinfo(this->curl, CURLINFO_CONTENT_TYPE, &ctype);
-        cout << "HTTP 200 (" << ctype << "): " << url << endl;
-        cout << "We received " << mem->size << "B of data" << endl;
 
-        // If no URL was visited yet, add the URL to the already visited URLs
-        // TODO: If this is not the first hop, pop a URL from to-be-visited,
-        // push to visited
-        _urls_visited.push_back(destination_handle);
+        // Debug prints
+        // cout << "HTTP 200 (" << ctype << "): " << url << endl;
+        // cout << "We received " << mem->size << "B of data" << endl;
 
         if (is_html(ctype) && this->mem->size > 100) {
           HTML_Parser parser;
@@ -93,7 +91,9 @@ CURLcode webCrawler::make_request(CURLU *destination_handle) {
            << " to: " << url << endl;
 
     curl_free(url);
-    curl_easy_cleanup(curl);
+
+    // Buffer clean-up
+    free(mem->buf);
   }
 
   return res;
@@ -116,17 +116,60 @@ size_t webCrawler::write_data(void *contents, size_t sz, size_t nmemb,
   return realsize;
 }
 
+// TODO: Pop only if the request is successfull
+size_t webCrawler::fetch_new_destination(CURLU **url_handle) {
+  size_t num_queue = _urls_to_be_visited.size();
+
+  // Nothing in the queue, exit
+  if (num_queue == 0) return num_queue;
+
+  // Get a new url handle from the queue
+  *url_handle = _urls_to_be_visited.front();
+  // Remove this from the queue
+  // TODO: Pop only if the request is successfull
+  _urls_to_be_visited.pop();
+
+  // Add it to the _urls_visited
+  _urls_visited.push(*url_handle);
+
+  return _urls_to_be_visited.size();
+}
+
 webCrawler::~webCrawler() {
+  CURLU *url_handle;
+  char *url;
+
   if (curl) {
     // Clean the url handles
-    for (CURLU *url_handle : _urls_visited) curl_url_cleanup(url_handle);
 
-    for (CURLU *url_handle : _urls_to_be_visited) curl_url_cleanup(url_handle);
+    // For the implementation that _urls_visited and _urls_to_be_visited are
+    // vectors
+    // for (CURLU *url_handle : _urls_visited) curl_url_cleanup(url_handle);
 
-    // Buffer clean-up
-    free(mem->buf);
+    // for (CURLU *url_handle : _urls_to_be_visited)
+    // curl_url_cleanup(url_handle);
+
+    while (!_urls_visited.empty()) {
+      url_handle = _urls_visited.front();
+      curl_url_get(url_handle, CURLUPART_URL, &url, 0);
+      _urls_visited.pop();
+
+      // TODO: I thought I need to do this
+      // curl_url_cleanup(url_handle);
+    }
+
+    while (!_urls_to_be_visited.empty()) {
+      url_handle = _urls_visited.front();
+      _urls_to_be_visited.pop();
+
+      // TODO: I thought I need to do this
+      // curl_url_cleanup(url_handle);
+    }
+
+    // Cleanup of memory struct
     free(mem);
 
+    curl_easy_cleanup(curl);
     curl_global_cleanup();
   }
 }
