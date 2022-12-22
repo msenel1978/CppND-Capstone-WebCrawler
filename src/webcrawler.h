@@ -8,8 +8,8 @@
 #include <queue>
 #include <string>
 
-#define MAX_REQUESTS_PER_URL 10
-#define MAX_REQUESTS 100
+#define MAX_REQUESTS_PER_URL 3
+#define MAX_REQUESTS 10000
 
 typedef struct {
   char *buf;
