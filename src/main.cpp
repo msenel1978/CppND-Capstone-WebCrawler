@@ -31,10 +31,13 @@ int main() {
   }
 
   // TODO: Worker thread(s)
+  // Write visited web-site to the file
+  visited_savefile.open("visited_urls.txt", ios::app);
 
   while (crawl.requests < MAX_REQUESTS) {
     if (request_count == (MAX_REQUESTS_PER_URL)) {
       cout << "Giving up! Will try another url!" << endl;
+      request_count = 0;
       if (crawl.fetch_new_destination(&url_handle) == 0) {
         cout << "No URLs to be visited: List is empty" << endl;
         break;
@@ -44,14 +47,11 @@ int main() {
     if (crawl.make_request(url_handle) == CURLE_OK) {
       request_count = 0;
 
-      // Write visited web-site to the file
-      visited_savefile.open("visited_urls.txt", ios::app);
       if (!visited_savefile)
         cout << "Could not write to file - No such file found";
       else {
         curl_url_get(url_handle, CURLUPART_URL, &url, 0);
         visited_savefile << url << endl;
-        visited_savefile.close();
       }
 
       // TODO: Clean the debug prints
@@ -73,6 +73,7 @@ int main() {
     // cout << "Following sites have been visited so far:" << endl;
     // crawl.print_visited();
   }
+  visited_savefile.close();
 
   // Print URLs to be visited
   cout << "Following urls are in the queue to be visited:" << endl;
