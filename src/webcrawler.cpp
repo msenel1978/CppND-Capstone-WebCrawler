@@ -80,6 +80,10 @@ CURLcode webCrawler::make_request(CURLU *destination_handle) {
           HTML_Parser parser;
 
           parser.follow_links(this->curl, this->mem, url, this);
+
+          // Increment the counter for requests.
+          // If max. is reached, the object will exit
+          requests++;
         }
 
       } else {

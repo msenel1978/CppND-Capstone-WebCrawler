@@ -8,7 +8,8 @@
 #include <queue>
 #include <string>
 
-#define MAX_REQUESTS 10
+#define MAX_REQUESTS_PER_URL 3
+#define MAX_REQUESTS 10000
 
 typedef struct {
   char *buf;
@@ -25,6 +26,8 @@ class webCrawler {
   std::queue<CURLU *> _urls_to_be_visited;
 
  public:
+  int requests;
+
   webCrawler();
   ~webCrawler();
 
@@ -51,6 +54,9 @@ class webCrawler {
   }
 
   int visited_site_num() { return _urls_visited.size(); }
+
+  // Utility function to check whether there urls in the queue to be visited
+  bool more_urls_to_visit() { return !_urls_to_be_visited.empty(); }
 
   // Utility function to print url's to be visited
   // TODO: Template for print?
