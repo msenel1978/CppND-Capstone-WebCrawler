@@ -4,6 +4,8 @@
 #include <fstream>
 #include <iostream>
 #include <memory>
+#include <mutex>
+#include <stdexcept>
 #include <string>
 
 #include "webcrawler.h"
@@ -18,6 +20,7 @@ int main() {
   CURLU *url_handle = curl_url();
   char *url;
   CURLUcode rc;
+  static std::mutex file_mutex;
 
   // First url handle
   rc = curl_url_set(url_handle, CURLUPART_URL, "https://www.reuters.com", 0);
@@ -31,7 +34,6 @@ int main() {
   }
 
   // TODO: Worker thread(s)
-  // Write visited web-site to the file
   visited_savefile.open("visited_urls.txt", ios::app);
 
   while (crawl.requests < MAX_REQUESTS) {
@@ -50,6 +52,10 @@ int main() {
       if (!visited_savefile)
         cout << "Could not write to file - No such file found";
       else {
+        // RAII-style mechanism for owning a mutex
+        // Lock |file_mutex| before accessing |visited_savefile|.
+        std::lock_guard<std::mutex> lock(file_mutex);
+        // Write visited web-site to the file
         curl_url_get(url_handle, CURLUPART_URL, &url, 0);
         visited_savefile << url << endl;
       }
