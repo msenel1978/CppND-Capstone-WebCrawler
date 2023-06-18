@@ -20,8 +20,7 @@ class webCrawler {
  private:
   CURL *curl;
 
-  // TODO: Can I have this as a shared_ptr?
-  memory_t *mem;
+  std::shared_ptr<memory_t> mem{new memory_t};
   std::queue<CURLU *> _urls_visited;
   std::queue<CURLU *> _urls_to_be_visited;
 
