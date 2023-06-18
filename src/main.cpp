@@ -55,6 +55,7 @@ int main() {
         // RAII-style mechanism for owning a mutex
         // Lock |file_mutex| before accessing |visited_savefile|.
         std::lock_guard<std::mutex> lock(file_mutex);
+
         // Write visited web-site to the file
         curl_url_get(url_handle, CURLUPART_URL, &url, 0);
         visited_savefile << url << endl;
