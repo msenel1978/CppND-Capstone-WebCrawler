@@ -21,24 +21,37 @@ size_t HTML_Parser::follow_links(CURL *curl_handle, memory_t *mem, char *url,
                                  webCrawler *crawler) {
   // size_t HTML_Parser::follow_links(CURL *curl_handle, memory_t *mem, char
   // *url) {
+  cout << "I am in follow_links. mem->size: " << mem->size << endl;
+  cout << "url in follow_links: " << url << endl;
   int opts = HTML_PARSE_NOBLANKS | HTML_PARSE_NOERROR | HTML_PARSE_NOWARNING |
              HTML_PARSE_NONET;
 
-  htmlDocPtr doc = htmlReadMemory(mem->buf, mem->size, url, NULL, opts);
-  if (!doc) return 0;
+  htmlDocPtr doc =
+      htmlReadMemory(move(mem->buf).get(), mem->size, url, NULL, opts);
+  if (!doc) {
+    cout << "No doc" << endl;
+    return 0;
+  }
+  cout << "I am in follow_links. mem->size: " << mem->size << endl;
   xmlChar *xpath = (xmlChar *)"//a/@href";
   xmlXPathContextPtr context = xmlXPathNewContext(doc);
   xmlXPathObjectPtr result = xmlXPathEvalExpression(xpath, context);
   xmlXPathFreeContext(context);
-  if (!result) return 0;
+  if (!result) {
+    cout << "No result" << endl;
+    return 0;
+  }
   xmlNodeSetPtr nodeset = result->nodesetval;
   if (xmlXPathNodeSetIsEmpty(nodeset)) {
+    cout << "xmlXPathNodeSetIsEmpty(nodeset). result->nodesetval: "
+         << result->nodesetval << endl;
     xmlXPathFreeObject(result);
     return 0;
   }
   size_t count = 0;
   int i;
   for (i = 0; i < nodeset->nodeNr; i++) {
+    cout << "I am in nodeset->nodeNr" << endl;
     double r = rand();
     int x = r * nodeset->nodeNr / RAND_MAX;
     const xmlNode *node = nodeset->nodeTab[x]->xmlChildrenNode;

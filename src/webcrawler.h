@@ -12,7 +12,7 @@
 #define MAX_REQUESTS 10000
 
 typedef struct {
-  char *buf;
+  std::unique_ptr<char> buf{new char};
   size_t size;
 } memory_t;
 
