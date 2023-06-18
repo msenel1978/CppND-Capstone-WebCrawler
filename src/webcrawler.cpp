@@ -24,16 +24,13 @@ webCrawler::webCrawler() {
   curl_easy_setopt(curl, CURLOPT_VERBOSE, 0L);
 
   if (curl) {
-    // Buffer struct for received data
-    mem = (memory_t *)malloc(sizeof(memory_t));
-
     /* Important: use HTTP2 over HTTPS */
     curl_easy_setopt(curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_2TLS);
 
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION,
                      webCrawler::write_data_callback);
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, mem);
-    curl_easy_setopt(curl, CURLOPT_PRIVATE, mem);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, mem.get());
+    curl_easy_setopt(curl, CURLOPT_PRIVATE, mem.get());
 
     /* For completeness */
     curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "");
@@ -176,9 +173,6 @@ webCrawler::~webCrawler() {
       // TODO: I thought I need to do this
       // curl_url_cleanup(url_handle);
     }
-
-    // Cleanup of memory struct
-    free(mem);
 
     curl_easy_cleanup(curl);
     curl_global_cleanup();
