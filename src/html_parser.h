@@ -12,8 +12,8 @@ class HTML_Parser {
 
  public:
   // size_t follow_links(CURLM *multi_handle, memory *mem, char *url);
-  size_t follow_links(CURL *curl_handle, memory_t *mem, char *url,
-                      webCrawler *crawler);
+  size_t follow_links(CURL *curl_handle, std::shared_ptr<memory_t> mem,
+                      char *url, webCrawler *crawler);
   // size_t follow_links(CURL *curl_handle, memory_t *mem, char *url);
 };
 
