@@ -22,18 +22,17 @@ size_t HTML_Parser::follow_links(CURL *curl_handle,
                                  webCrawler *crawler) {
   // size_t HTML_Parser::follow_links(CURL *curl_handle, memory_t *mem, char
   // *url) {
-  cout << "I am in follow_links. mem->size: " << mem->size << endl;
+  cout << "I am in follow_links 1). mem->size: " << mem->size << endl;
   cout << "url in follow_links: " << url << endl;
   int opts = HTML_PARSE_NOBLANKS | HTML_PARSE_NOERROR | HTML_PARSE_NOWARNING |
              HTML_PARSE_NONET;
 
-  htmlDocPtr doc =
-      htmlReadMemory(move(mem->buf).get(), mem->size, url, NULL, opts);
+  htmlDocPtr doc = htmlReadMemory(mem->buf.get(), mem->size, url, NULL, opts);
   if (!doc) {
     cout << "No doc" << endl;
     return 0;
   }
-  cout << "I am in follow_links. mem->size: " << mem->size << endl;
+  cout << "I am in follow_links 2). mem->size: " << mem->size << endl;
   xmlChar *xpath = (xmlChar *)"//a/@href";
   xmlXPathContextPtr context = xmlXPathNewContext(doc);
   xmlXPathObjectPtr result = xmlXPathEvalExpression(xpath, context);

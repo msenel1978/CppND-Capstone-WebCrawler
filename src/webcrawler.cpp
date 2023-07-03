@@ -55,7 +55,7 @@ CURLcode webCrawler::make_request(CURLU *destination_handle) {
   if (!rc) {
     // Buffer for received data
     mem->size = 0;
-    // mem->buf = make_unique<char>();
+    mem->buf = make_shared<char>();
 
     curl_easy_setopt(curl, CURLOPT_URL, url);
 
@@ -76,7 +76,7 @@ CURLcode webCrawler::make_request(CURLU *destination_handle) {
         if (is_html(ctype) && this->mem->size > 100) {
           HTML_Parser parser;
 
-          parser.follow_links(this->curl, move(this->mem), url, this);
+          parser.follow_links(this->curl, this->mem, url, this);
 
           // Increment the counter for requests.
           // If max. is reached, the object will exit
@@ -114,8 +114,8 @@ size_t webCrawler::write_data(void *contents, size_t sz, size_t nmemb,
   // Instead
   // tmp_mem->buf = ptr;
   // Do this:
-  tmp_mem->buf.release();
-  tmp_mem->buf.reset(ptr);
+  // tmp_mem->buf.release();
+  // tmp_mem->buf.reset(ptr);
   // memcpy(&(tmp_mem->buf[tmp_mem->size]), contents, realsize);
   memcpy(tmp_mem->buf.get(), contents, realsize);
   tmp_mem->size += realsize;

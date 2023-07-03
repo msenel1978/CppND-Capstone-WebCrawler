@@ -12,7 +12,7 @@
 #define MAX_REQUESTS 10000
 
 typedef struct {
-  std::unique_ptr<char> buf{new char};
+  std::shared_ptr<char> buf;
   size_t size;
 } memory_t;
 
@@ -30,7 +30,9 @@ class webCrawler {
   webCrawler();
   ~webCrawler();
 
-  // TODO: High level function that makes the request and fetch pull web-site
+  // TODO: High level function that makes the request and fetch / pull web-site
+  // TODO: Others can be provate member functions, i.e.; fetch, add, write_data
+  // etc.
   CURLcode make_request(CURLU *destination);
   // Pop a new url from the list of to be visited
   size_t fetch_new_destination(CURLU **url_handle);
