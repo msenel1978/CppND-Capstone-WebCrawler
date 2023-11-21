@@ -28,7 +28,7 @@ size_t HTML_Parser::follow_links(CURL *curl_handle,
              HTML_PARSE_NONET;
 
   htmlDocPtr doc =
-      htmlReadMemory(move(mem->buf).get(), mem->size, url, NULL, opts);
+      htmlReadMemory(std::move(mem->buf).get(), mem->size, url, NULL, opts);
   if (!doc) {
     cout << "No doc" << endl;
     return 0;

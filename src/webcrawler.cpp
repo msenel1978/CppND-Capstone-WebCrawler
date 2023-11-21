@@ -78,7 +78,7 @@ CURLcode webCrawler::make_request(CURLU *destination_handle) {
         if (is_html(ctype) && this->mem->size > 100) {
           HTML_Parser parser;
 
-          parser.follow_links(this->curl, move(this->mem), url, this);
+          parser.follow_links(this->curl, std::move(this->mem), url, this);
 
           // Increment the counter for requests.
           // If max. is reached, the object will exit
