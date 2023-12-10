@@ -11,7 +11,7 @@
 #define MAX_REQUESTS_PER_URL 3
 #define MAX_REQUESTS 10000
 
-typedef struct {
+typedef struct memory {
   std::unique_ptr<char> buf{new char};
   size_t size;
 } memory_t;
