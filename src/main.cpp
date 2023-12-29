@@ -23,7 +23,8 @@ int main() {
   static std::mutex file_mutex;
 
   // First url handle
-  rc = curl_url_set(url_handle, CURLUPART_URL, "https://www.reuters.com", 0);
+  //rc = curl_url_set(url_handle, CURLUPART_URL, "https://www.reuters.com", 0);
+  rc = curl_url_set(url_handle, CURLUPART_URL, "http://www.reddit.com", 0);
 
   if (rc) {
     // curl_url_strerror available with libcurl >=7.80.0
@@ -47,6 +48,9 @@ int main() {
     }
     // Start crawling
     if (crawl.make_request(url_handle) == CURLE_OK) {
+      // Will exist after MAX_REQUESTS successful requests
+      crawl.requests++;
+
       request_count = 0;
 
       if (!visited_savefile)

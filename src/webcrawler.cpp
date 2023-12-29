@@ -13,6 +13,8 @@
 using namespace std;
 
 webCrawler::webCrawler() {
+  // Stop after MAX_REQUESTS requests
+  requests = 0;
   curl_global_init(CURL_GLOBAL_DEFAULT);
 
   // curl handle
