@@ -20,8 +20,7 @@ int is_html(char *ctype) {
 size_t HTML_Parser::follow_links(CURL *curl_handle,
                                  std::shared_ptr<memory_t> mem, char *url,
                                  webCrawler *crawler) {
-  // size_t HTML_Parser::follow_links(CURL *curl_handle, memory_t *mem, char
-  // *url) {
+
   cout << "I am in follow_links. mem->size: " << mem->size << endl;
   cout << "url in follow_links: " << url << endl;
   int opts = HTML_PARSE_NOBLANKS | HTML_PARSE_NOERROR | HTML_PARSE_NOWARNING |
@@ -33,7 +32,7 @@ size_t HTML_Parser::follow_links(CURL *curl_handle,
     cout << "No doc" << endl;
     return 0;
   }
-  cout << "I am in follow_links. mem->size: " << mem->size << endl;
+
   xmlChar *xpath = (xmlChar *)"//a/@href";
   xmlXPathContextPtr context = xmlXPathNewContext(doc);
   xmlXPathObjectPtr result = xmlXPathEvalExpression(xpath, context);
@@ -52,7 +51,6 @@ size_t HTML_Parser::follow_links(CURL *curl_handle,
   size_t count = 0;
   int i;
   for (i = 0; i < nodeset->nodeNr; i++) {
-    cout << "I am in nodeset->nodeNr" << endl;
     double r = rand();
     int x = r * nodeset->nodeNr / RAND_MAX;
     const xmlNode *node = nodeset->nodeTab[x]->xmlChildrenNode;
