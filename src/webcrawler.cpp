@@ -48,16 +48,18 @@ webCrawler::webCrawler() {
   }
 }
 
-CURLcode webCrawler::make_request(CURLU *destination_handle) {
+/// @brief
+/// @param destination_handle
+/// @return
+CURLcode webCrawler::make_request(CURLU *destination_url_handle) {
   char *url;
-  CURLUcode rc = curl_url_get(destination_handle, CURLUPART_URL, &url, 0);
+  CURLUcode rc = curl_url_get(destination_url_handle, CURLUPART_URL, &url, 0);
   CURLcode res;
   long res_status;
 
   if (!rc) {
     // Buffer for received data
     mem->size = 0;
-    // mem->buf = make_unique<char>();
 
     curl_easy_setopt(curl, CURLOPT_URL, url);
 
@@ -72,13 +74,13 @@ CURLcode webCrawler::make_request(CURLU *destination_handle) {
         curl_easy_getinfo(this->curl, CURLINFO_CONTENT_TYPE, &ctype);
 
         // Debug prints
-        cout << "HTTP 200 (" << ctype << "): " << url << endl;
-        cout << "We received " << mem->size << "B of data" << endl;
+        // cout << "HTTP 200 (" << ctype << "): " << url << endl;
+        // cout << "We received " << mem->size << "B of data" << endl;
 
         if (is_html(ctype) && this->mem->size > 100) {
           HTML_Parser parser;
 
-          parser.follow_links(this->curl, std::move(this->mem), url, this);
+          parser.follow_links(this->curl, this->mem, url, this);
 
           // Increment the counter for requests.
           // If max. is reached, the object will exit
@@ -89,37 +91,29 @@ CURLcode webCrawler::make_request(CURLU *destination_handle) {
         cout << "HTTP " << (int)res_status << " " << url << endl;
       }
 
+      curl_free(url);
+
     } else
       cout << "Connection failure - CURLCode: " << curl_easy_strerror(res)
            << " to: " << url << endl;
-
-    curl_free(url);
-
-    // Buffer clean-up
-    // free(mem->buf);
   }
-
   return res;
 }
 
 size_t webCrawler::write_data(void *contents, size_t sz, size_t nmemb,
                               void *ctx) {
+
   size_t realsize = sz * nmemb;
   memory_t *tmp_mem = (memory_t *)ctx;
-  char *ptr = (char *)realloc(tmp_mem->buf.get(), tmp_mem->size + realsize);
+  char *ptr = (char *)realloc(tmp_mem->buf.release(), tmp_mem->size + realsize);
   if (!ptr) {
     /* out of memory */
     printf("not enough memory (realloc returned NULL)\n");
     return 0;
   }
 
-  // Instead
-  // tmp_mem->buf = ptr;
-  // Do this:
-  tmp_mem->buf.release();
-  tmp_mem->buf.reset(ptr);
-  // memcpy(&(tmp_mem->buf[tmp_mem->size]), contents, realsize);
-  memcpy(tmp_mem->buf.get(), contents, realsize);
+  tmp_mem->buf.reset(ptr); // Assign the new buffer to the unique_ptr
+  memcpy(&(tmp_mem->buf.get()[tmp_mem->size]), contents, realsize);
   tmp_mem->size += realsize;
   return realsize;
 }

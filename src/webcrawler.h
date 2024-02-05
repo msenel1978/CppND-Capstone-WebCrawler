@@ -31,7 +31,7 @@ class webCrawler {
   ~webCrawler();
 
   // TODO: High level function that makes the request and fetch pull web-site
-  CURLcode make_request(CURLU *destination);
+  CURLcode make_request(CURLU *destination_url_handle);
   // Pop a new url from the list of to be visited
   size_t fetch_new_destination(CURLU **url_handle);
 
