@@ -14,7 +14,8 @@ using namespace std;
 
 ofstream visited_savefile;
 
-int main() {
+int main(int argc, char* argv[])
+{
   int request_count = 0;
   webCrawler crawl;
   CURLU *url_handle = curl_url();
@@ -22,9 +23,15 @@ int main() {
   CURLUcode rc;
   static std::mutex file_mutex;
 
+   if (argc < 1) {
+    cout << "Usage: WebCrawler URL" << endl;
+    cout << "Example: WebCrawler http://www.reddit.com" << endl;
+    return 1;
+  }
+
   // First url handle
-  //rc = curl_url_set(url_handle, CURLUPART_URL, "https://www.reuters.com", 0);
-  rc = curl_url_set(url_handle, CURLUPART_URL, "http://www.reddit.com", 0);
+  //rc = curl_url_set(url_handle, CURLUPART_URL, "http://www.reddit.com", 0);
+  rc = curl_url_set(url_handle, CURLUPART_URL, argv[1], 0);
 
   //TODO: Do this for all URLs
   /* Some web-sites does not allow carwling  / scrapping and return HTTP 403 (Forbidden Error)
@@ -37,7 +44,8 @@ int main() {
     // curl_url_strerror available with libcurl >=7.80.0
     // cout << "Problem with 1st destination: " << curl_url_strerror(rc) <<
     // endl;
-    cout << "Problem with first destination: URL handle" << rc << endl;
+    cout << "Problem with first destination: URL handle " << rc << endl;
+    cout << "Example: WebCrawler http://www.reddit.com" << endl;
     return rc;
   }
 
