@@ -23,7 +23,7 @@ int main(int argc, char* argv[])
   CURLUcode rc;
   static std::mutex file_mutex;
 
-   if (argc < 1) {
+   if (argc < 2) {
     cout << "Usage: WebCrawler URL" << endl;
     cout << "Example: WebCrawler http://www.reddit.com" << endl;
     return 1;
