@@ -8,6 +8,8 @@
 #include <stdexcept>
 #include <string>
 
+#include <thread>
+
 #include "webcrawler.h"
 
 using namespace std;
@@ -22,6 +24,8 @@ int main(int argc, char* argv[])
   char *url;
   CURLUcode rc;
   static std::mutex file_mutex;
+  std::thread file_writer_thread(std::bind(&webCrawler::flush_visited_sites, &crawl,
+                                std::ref(visited_savefile), std::ref(file_mutex)));
 
    if (argc < 2) {
     cout << "Usage: WebCrawler URL" << endl;
@@ -39,7 +43,6 @@ int main(int argc, char* argv[])
     Another way is to start scraping with the Google Cache version, which is implemented here */
   //rc = curl_url_set(url_handle, CURLUPART_URL, "https://webcache.googleusercontent.com/search?q=cache:http://www.reddit.com", 0);
 
-
   if (rc) {
     // curl_url_strerror available with libcurl >=7.80.0
     // cout << "Problem with 1st destination: " << curl_url_strerror(rc) <<
@@ -49,8 +52,6 @@ int main(int argc, char* argv[])
     return rc;
   }
 
-  // TODO: Worker thread(s)
-  visited_savefile.open("visited_urls.txt", ios::app);
 
   while (crawl.requests < MAX_REQUESTS) {
     if (request_count == (MAX_REQUESTS_PER_URL)) {
@@ -67,18 +68,6 @@ int main(int argc, char* argv[])
       crawl.requests++;
 
       request_count = 0;
-
-      if (!visited_savefile)
-        cout << "Could not write to file - No such file found";
-      else {
-        // RAII-style mechanism for owning a mutex
-        // Lock |file_mutex| before accessing |visited_savefile|.
-        std::lock_guard<std::mutex> lock(file_mutex);
-
-        // Write visited web-site to the file
-        curl_url_get(url_handle, CURLUPART_URL, &url, 0);
-        visited_savefile << url << endl;
-      }
 
       // TODO: Clean the debug prints
       cout << "Crawl object has " << crawl.buf_size() << "B buffered data"
@@ -99,7 +88,6 @@ int main(int argc, char* argv[])
     // cout << "Following sites have been visited so far:" << endl;
     // crawl.print_visited();
   }
-  visited_savefile.close();
 
   // Print URLs to be visited
   cout << "Following urls are in the queue to be visited:" << endl;

@@ -4,6 +4,7 @@
 #include <curl/curl.h>
 
 #include <iostream>
+#include <fstream>
 #include <memory>
 #include <queue>
 #include <string>
@@ -39,6 +40,9 @@ class webCrawler {
   void add_url_to_be_visited(CURLU *new_url) {
     _urls_to_be_visited.push(new_url);
   }
+
+  // Function to flush visited sites to a file
+  void flush_visited_sites(std::ofstream &visited_savefile, std::mutex &file_mutex);
 
   /* Utility function to parse urls */
   int findURLs_in_buf(char *received_buf);

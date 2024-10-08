@@ -137,6 +137,36 @@ size_t webCrawler::fetch_new_destination(CURLU **url_handle) {
   return _urls_to_be_visited.size();
 }
 
+void webCrawler::flush_visited_sites(std::ofstream &visited_savefile, std::mutex &file_mutex) {
+  CURLU *new_url_handle;
+  char *url;
+
+  visited_savefile.open("visited_urls.txt", ios::app);
+
+  while (!_urls_visited.empty()) {
+    // RAII-style mechanism for owning a mutex
+    // Lock |file_mutex| before accessing |visited_savefile|.
+    std::lock_guard<std::mutex> lock(file_mutex);
+
+    // TODO: Need to lock this queue
+    new_url_handle = _urls_visited.front();
+    curl_url_get(new_url_handle, CURLUPART_URL, &url, 0);
+    //std::cout << url << std::endl;
+
+    if (!visited_savefile)
+      std::cout << "Could not write to file - No such file found";
+    else {
+      // Write visited web-site to the file
+      curl_url_get(new_url_handle, CURLUPART_URL, &url, 0);
+      visited_savefile << url << std::endl;
+    }
+
+    _urls_visited.pop();
+  }
+
+  visited_savefile.close();
+}
+
 webCrawler::~webCrawler() {
   CURLU *url_handle;
   char *url;
