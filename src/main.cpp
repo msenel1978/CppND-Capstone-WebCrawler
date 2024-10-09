@@ -37,7 +37,7 @@ int main(int argc, char* argv[])
   //rc = curl_url_set(url_handle, CURLUPART_URL, "http://www.reddit.com", 0);
   rc = curl_url_set(url_handle, CURLUPART_URL, argv[1], 0);
 
-  //TODO: Do this for all URLs
+  //TODO: #6 Do this for all URLs
   /* Some web-sites does not allow carwling  / scrapping and return HTTP 403 (Forbidden Error)
     There are different ways to by-pass this, i.e.; via a proxy. 
     Another way is to start scraping with the Google Cache version, which is implemented here */
@@ -51,7 +51,6 @@ int main(int argc, char* argv[])
     cout << "Example: WebCrawler http://www.reddit.com" << endl;
     return rc;
   }
-
 
   while (crawl.requests < MAX_REQUESTS) {
     if (request_count == (MAX_REQUESTS_PER_URL)) {
@@ -70,29 +69,36 @@ int main(int argc, char* argv[])
       request_count = 0;
 
       // TODO: Clean the debug prints
-      cout << "Crawl object has " << crawl.buf_size() << "B buffered data"
-           << "\n";
+      //cout << "Crawl object has " << crawl.buf_size() << "B buffered data"
+      //     << "\n";
       if (crawl.fetch_new_destination(&url_handle) == 0) {
         cout << "No URLs to be visited: List is empty" << endl;
         break;
       }
       curl_url_get(url_handle, CURLUPART_URL, &url, 0);
-      cout << "Following url is next: " << url << endl;
+      // TODO: Clean this debug print
+      // cout << "Following url is next: " << url << endl;
     } else {
       request_count++;
       cout << " Will try: " << MAX_REQUESTS_PER_URL - request_count << " times"
            << endl;
     }
-
-    // Print URLs already visited
-    // cout << "Following sites have been visited so far:" << endl;
-    // crawl.print_visited();
+    // TODO: Clean this debug print
+    cout << "Visited queue size: " << crawl.visited_site_num()  << endl;
   }
 
   // Print URLs to be visited
-  cout << "Following urls are in the queue to be visited:" << endl;
-  cout << "---------------------" << endl;
-  crawl.print_to_be_visited();
+  // cout << "Following urls are in the queue to be visited:" << endl;
+  // cout << "---------------------" << endl;
+  // crawl.print_to_be_visited();
+
+  // Print URLs already visited
+  cout << "1) Following visited sites have been left out in the queue:" << endl;
+  crawl.print_visited();
+
+  file_writer_thread.join();
+  cout << "2) Following visited sites have been left out in the queue:" << endl;
+  crawl.print_visited();
 
   return 0;
 }

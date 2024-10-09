@@ -140,28 +140,44 @@ size_t webCrawler::fetch_new_destination(CURLU **url_handle) {
 void webCrawler::flush_visited_sites(std::ofstream &visited_savefile, std::mutex &file_mutex) {
   CURLU *new_url_handle;
   char *url;
+  int counter = 0;
 
+  cout << "Flushing visited sites to file" << endl;
   visited_savefile.open("visited_urls.txt", ios::app);
 
-  while (!_urls_visited.empty()) {
-    // RAII-style mechanism for owning a mutex
-    // Lock |file_mutex| before accessing |visited_savefile|.
-    std::lock_guard<std::mutex> lock(file_mutex);
+  //TODO: Can I do this in a better way?
+  while (1) {
 
-    // TODO: Need to lock this queue
-    new_url_handle = _urls_visited.front();
-    curl_url_get(new_url_handle, CURLUPART_URL, &url, 0);
-    //std::cout << url << std::endl;
+    /* Flush only of the queue size reaches 10 OR
+    * the number of requests reaches the MAX_REQUESTS
+    */
+    if ((_urls_visited.size() >= 10)  || (requests == MAX_REQUESTS)) {
 
-    if (!visited_savefile)
-      std::cout << "Could not write to file - No such file found";
-    else {
-      // Write visited web-site to the file
-      curl_url_get(new_url_handle, CURLUPART_URL, &url, 0);
-      visited_savefile << url << std::endl;
+      while (!_urls_visited.empty()) {
+        // RAII-style mechanism for owning a mutex
+        // Lock |file_mutex| before accessing |visited_savefile|.
+        std::lock_guard<std::mutex> lock(file_mutex);
+
+        // TODO: Need to lock this queue
+        new_url_handle = _urls_visited.front();
+        curl_url_get(new_url_handle, CURLUPART_URL, &url, 0);
+        //std::cout << url << std::endl;
+
+        if (!visited_savefile)
+          std::cout << "Could not write to file - No such file found";
+        else {
+          // Write visited web-site to the file
+          curl_url_get(new_url_handle, CURLUPART_URL, &url, 0);
+          visited_savefile << counter << ") " <<url << std::endl;
+        }
+        counter++;
+        _urls_visited.pop();
+      }
     }
 
-    _urls_visited.pop();
+    // Exit if the number of requests is reached
+    if (requests == MAX_REQUESTS) break;
+
   }
 
   visited_savefile.close();
