@@ -11,6 +11,7 @@
 
 #define MAX_REQUESTS_PER_URL 3
 #define MAX_REQUESTS 100
+#define MAX_LINKS_PER_PAGE 100
 
 typedef struct memory {
   std::unique_ptr<char> buf{new char};

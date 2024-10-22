@@ -21,8 +21,8 @@ size_t HTML_Parser::follow_links(CURL *curl_handle,
                                  std::shared_ptr<memory_t> mem, char *url,
                                  webCrawler *crawler) {
 
-  cout << "I am in follow_links. mem->size: " << mem->size << endl;
-  cout << "url in follow_links: " << url << endl;
+  //TODO: Convert to DEBUG_PRINT
+  // cout << "url in follow_links: " << url <<  " mem->size:" << mem->size << endl;
   int opts = HTML_PARSE_NOBLANKS | HTML_PARSE_NOERROR | HTML_PARSE_NOWARNING |
              HTML_PARSE_NONET;
 
@@ -71,7 +71,6 @@ size_t HTML_Parser::follow_links(CURL *curl_handle,
 
       // Add new url to the visited url list
       crawler->add_url_to_be_visited(new_url_handle);
-      // TODO: Write the link to a file
 
       if (count++ == max_link_per_page) break;
     }

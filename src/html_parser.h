@@ -7,10 +7,12 @@ int is_html(char *ctype);
 
 class HTML_Parser {
  private:
-  static int const max_link_per_page = 100;
+  int max_link_per_page;
   static int const follow_relative_links = 0;
 
  public:
+  HTML_Parser(int max_links) : max_link_per_page(max_links) {}
+
   // size_t follow_links(CURLM *multi_handle, memory *mem, char *url);
   size_t follow_links(CURL *curl_handle, std::shared_ptr<memory_t> mem,
                       char *url, webCrawler *crawler);

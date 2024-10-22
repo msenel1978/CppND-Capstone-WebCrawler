@@ -78,7 +78,7 @@ CURLcode webCrawler::make_request(CURLU *destination_url_handle) {
         // cout << "We received " << mem->size << "B of data" << endl;
 
         if (is_html(ctype) && this->mem->size > 100) {
-          HTML_Parser parser;
+          HTML_Parser parser(MAX_LINKS_PER_PAGE);
 
           parser.follow_links(this->curl, this->mem, url, this);
 
