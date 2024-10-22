@@ -10,7 +10,7 @@
 #include <string>
 
 #define MAX_REQUESTS_PER_URL 3
-#define MAX_REQUESTS 100
+#define MAX_REQUESTS 10000
 #define MAX_LINKS_PER_PAGE 100
 
 typedef struct memory {
