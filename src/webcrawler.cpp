@@ -48,9 +48,9 @@ webCrawler::webCrawler() {
   }
 }
 
-/// @brief
+/// @brief Pulls a web-site and parses the HTML to extract the links
 /// @param destination_handle
-/// @return
+/// @return CURLcode
 CURLcode webCrawler::make_request(CURLU *destination_url_handle) {
   char *url;
   CURLUcode rc = curl_url_get(destination_url_handle, CURLUPART_URL, &url, 0);
@@ -100,6 +100,7 @@ CURLcode webCrawler::make_request(CURLU *destination_url_handle) {
   return res;
 }
 
+// Callback function to write data to memory
 size_t webCrawler::write_data(void *contents, size_t sz, size_t nmemb,
                               void *ctx) {
 
@@ -119,6 +120,7 @@ size_t webCrawler::write_data(void *contents, size_t sz, size_t nmemb,
 }
 
 // TODO: Pop only if the request is successfull
+// Pop a new url from the list of to-be-visited and add it to the list of visited
 size_t webCrawler::fetch_new_destination(CURLU **url_handle) {
   size_t num_queue = _urls_to_be_visited.size();
 
@@ -137,6 +139,7 @@ size_t webCrawler::fetch_new_destination(CURLU **url_handle) {
   return _urls_to_be_visited.size();
 }
 
+// Utility function to flush visited sites to a file
 void webCrawler::flush_visited_sites(std::ofstream &visited_savefile, std::mutex &file_mutex) {
   CURLU *new_url_handle;
   char *url;

@@ -5,6 +5,11 @@
 
 int is_html(char *ctype);
 
+//TODO: Any invariants that need to be maintained?
+/* This class is responsible for parsing the HTML and extracting the links
+from the page.
+The urls parsed are added to the webCrawler's queue of urls to be visited.
+*/
 class HTML_Parser {
  private:
   int max_link_per_page;

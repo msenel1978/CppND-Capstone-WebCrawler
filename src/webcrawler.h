@@ -18,6 +18,11 @@ typedef struct memory {
   size_t size;
 } memory_t;
 
+//TODO: Any invariants that need to be maintained?
+/* This class is responsible for making the requests to the web-sites and
+fetching the web-pages.
+webCrawler is responsible for making the requests and fetching the web-pages.
+*/
 class webCrawler {
  private:
   CURL *curl;
@@ -32,12 +37,13 @@ class webCrawler {
   webCrawler();
   ~webCrawler();
 
-  // TODO: High level function that makes the request and fetch pull web-site
+  // High level function that makes the request and fetch pull web-site
   CURLcode make_request(CURLU *destination_url_handle);
+
   // Pop a new url from the list of to be visited
   size_t fetch_new_destination(CURLU **url_handle);
 
-  // Add discovered URL
+  // Add discovered URL to a list of visited sites
   void add_url_to_be_visited(CURLU *new_url) {
     _urls_to_be_visited.push(new_url);
   }

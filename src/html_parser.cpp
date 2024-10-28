@@ -17,6 +17,7 @@ int is_html(char *ctype) {
 }
 
 /* HREF finder implemented in libxml2 but could be any HTML parser */
+// Parse the HTML and extract the links
 size_t HTML_Parser::follow_links(CURL *curl_handle,
                                  std::shared_ptr<memory_t> mem, char *url,
                                  webCrawler *crawler) {
