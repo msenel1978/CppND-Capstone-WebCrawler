@@ -8,6 +8,7 @@
 #include <memory>
 #include <queue>
 #include <string>
+#include <mutex>
 
 #define MAX_REQUESTS_PER_URL 3
 #define MAX_REQUESTS 10000

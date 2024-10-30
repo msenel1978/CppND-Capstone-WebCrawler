@@ -5,6 +5,7 @@
 #include <iostream>
 #include <memory>
 #include <mutex>
+#include <functional>
 #include <stdexcept>
 #include <string>
 

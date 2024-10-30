@@ -10,7 +10,9 @@ find_package(LibXml2 REQUIRED)
 
 set(CXX_FLAGS "-Wall")
 #set(CMAKE_CXX_FLAGS, "${CXX_FLAGS} -pthread -lcurl")
-set(CMAKE_CXX_FLAGS, "${CXX_FLAGS} -pthread")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
+set(CMAKE_THREAD_LIBS_INIT "-lpthread")
+
 
 # Find all executables
 file(GLOB project_SRCS src/main.cpp
