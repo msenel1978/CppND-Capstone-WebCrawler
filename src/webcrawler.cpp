@@ -88,14 +88,31 @@ CURLcode webCrawler::make_request(CURLU *destination_url_handle) {
         }
 
       } else {
-        cout << "HTTP " << (int)res_status << " " << url << endl;
+          cout << "HTTP Error Code: " << (int)res_status << " " << url << endl;
+
+          if (res_status == 403) {
+            /* Some web-sites do not allow carwling  / scrapping and return HTTP 403 (Forbidden Error)
+            There are different ways to by-pass this, i.e.; via a proxy.
+            Another way is to start scraping with the Google Cache version, which is implemented here */
+            std::string new_url = "https://webcache.googleusercontent.com/search?q=cache:" + std::string(url);
+            curl_free(url);
+            url = strdup(new_url.c_str());
+
+            CURLU *new_url_handle = curl_url();
+            rc = curl_url_set(new_url_handle, CURLUPART_URL, url, 0);
+
+            // Add new url to be visited url list
+            add_url_to_be_visited(new_url_handle);
+            cout << "Will try with Google Cache'd version: " << url << endl;
+            res = CURLE_REMOTE_ACCESS_DENIED;
+          }
       }
 
       curl_free(url);
 
     } else
-      cout << "Connection failure - CURLCode: " << curl_easy_strerror(res)
-           << " to: " << url << endl;
+        cout << "Connection failure - CURLCode: " << curl_easy_strerror(res)
+          << " to: " << url << endl;
   }
   return res;
 }

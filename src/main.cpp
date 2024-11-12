@@ -44,12 +44,6 @@ int main(int argc, char* argv[])
   //rc = curl_url_set(url_handle, CURLUPART_URL, "http://www.reddit.com", 0);
   rc = curl_url_set(url_handle, CURLUPART_URL, argv[1], 0);
 
-  //TODO: #6 Do this for all URLs
-  /* Some web-sites do not allow carwling  / scrapping and return HTTP 403 (Forbidden Error)
-    There are different ways to by-pass this, i.e.; via a proxy. 
-    Another way is to start scraping with the Google Cache version, which is implemented here */
-  //rc = curl_url_set(url_handle, CURLUPART_URL, "https://webcache.googleusercontent.com/search?q=cache:http://www.reddit.com", 0);
-
   if (rc) {
     // curl_url_strerror available with libcurl >=7.80.0
     // cout << "Problem with 1st destination: " << curl_url_strerror(rc) <<
